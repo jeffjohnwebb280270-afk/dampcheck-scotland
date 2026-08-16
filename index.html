@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DampCheck Scotland — free help with damp and mould in Scottish rented homes</title>
+<meta name="description" content="Free tool for tenants in Scotland. Work out what your damp or mould is, calculate your landlord's legal deadlines under the new 10-3-5 rule from 6 October 2026, and generate a dated letter to report it.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#111E1D;
+  --deep:#0E3B38;        /* Scottish loch teal — the tool's own colour */
+  --paper:#FAF8F3;
+  --card:#FFFFFF;
+  --line:rgba(17,30,29,.13);
+  --line-d:rgba(250,248,243,.16);
+  --mid:#5E6E6C;
+  --ok:#1F6F4A;
+  --warn:#B45309;
+  --late:#A31D1D;
+  --f-d:'Archivo','Helvetica Neue',sans-serif;
+  --f-b:'Inter',system-ui,sans-serif;
+  --f-m:'IBM Plex Mono',ui-monospace,monospace;
+  --pad:clamp(18px,5vw,56px);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--f-b);font-size:17px;line-height:1.6}
+img,svg{max-width:100%;display:block}
+:focus-visible{outline:3px solid var(--deep);outline-offset:2px}
+.wrap{max-width:840px;margin:0 auto;padding:0 var(--pad)}
+.band{padding:clamp(38px,7vw,68px) 0}
+.band--tight{padding:clamp(26px,4vw,40px) 0}
+.band--deep{background:var(--deep);color:#EAF2F0}
+.band--ink{background:var(--ink);color:#E6EDEC}
+
+h1,h2,h3{font-family:var(--f-d);font-weight:800;letter-spacing:-.025em;line-height:1.08;margin:0 0 .5em}
+h1{font-size:clamp(32px,6.4vw,52px)}
+h2{font-size:clamp(24px,4vw,34px);font-weight:700}
+h3{font-size:clamp(18px,2.6vw,21px);font-weight:700;letter-spacing:-.015em}
+p{margin:0 0 1em;max-width:64ch}
+.lede{font-size:clamp(17px,2.2vw,20px);line-height:1.5;color:#33454300}
+.lede{color:#334543}
+.band--deep .lede,.band--ink .lede{color:rgba(234,242,240,.82)}
+.eyebrow{font-family:var(--f-m);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--mid);margin:0 0 14px;display:flex;align-items:center;gap:9px}
+.eyebrow::before{content:"";width:20px;height:2px;background:currentColor;opacity:.5}
+.band--deep .eyebrow,.band--ink .eyebrow{color:rgba(234,242,240,.6)}
+.small{font-size:14.5px;color:var(--mid);line-height:1.55}
+.mono{font-family:var(--f-m)}
+
+header.site{background:var(--ink);color:#E6EDEC;position:sticky;top:0;z-index:50}
+.hbar{display:flex;align-items:center;gap:14px;padding:12px 0}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit}
+.logo b{font-family:var(--f-d);font-weight:800;font-size:16px;letter-spacing:-.02em;line-height:1}
+.logo span{font-family:var(--f-m);font-size:9px;letter-spacing:.15em;text-transform:uppercase;opacity:.6;display:block;margin-top:3px}
+.logo .m{width:22px;height:30px;flex:none}
+.logo .m path{fill:#E6EDEC}
+.hbar .free{margin-left:auto;font-family:var(--f-m);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;
+  border:1px solid var(--line-d);padding:6px 10px;border-radius:2px;opacity:.85}
+
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--f-d);font-size:15.5px;font-weight:600;
+  padding:14px 22px;border:2px solid var(--ink);background:var(--ink);color:var(--paper);text-decoration:none;
+  cursor:pointer;border-radius:3px;transition:.16s}
+.btn:hover{background:transparent;color:var(--ink)}
+.btn--o{background:transparent;color:var(--ink)}
+.btn--o:hover{background:var(--ink);color:var(--paper)}
+.btn--l{background:#EAF2F0;border-color:#EAF2F0;color:var(--deep)}
+.btn--l:hover{background:transparent;color:#EAF2F0}
+.btnrow{display:flex;flex-wrap:wrap;gap:11px;margin-top:22px}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:22px}
+.band--deep .card,.band--ink .card{background:rgba(255,255,255,.06);border-color:var(--line-d)}
+.cols{display:grid;gap:16px}
+.c2{grid-template-columns:repeat(2,1fr)}
+.c3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:680px){.c2,.c3{grid-template-columns:1fr}}
+
+/* step / choice buttons */
+.opts{display:grid;gap:10px;grid-template-columns:repeat(2,1fr)}
+@media(max-width:600px){.opts{grid-template-columns:1fr}}
+.opt{border:2px solid var(--line);background:#fff;padding:15px 16px;text-align:left;cursor:pointer;border-radius:3px;
+  font-family:var(--f-b);font-size:15.5px;font-weight:500;color:var(--ink);transition:.14s;line-height:1.35}
+.opt:hover{border-color:var(--deep)}
+.opt.sel{border-color:var(--deep);background:#E8F1EF;box-shadow:inset 0 0 0 1px var(--deep)}
+.opt small{display:block;font-size:13px;color:var(--mid);margin-top:4px;font-weight:400}
+.opt.sel small{color:#2A4B48}
+
+input[type=text],input[type=date],input[type=email],textarea,select{
+  width:100%;padding:14px 15px;border:2px solid var(--line);border-radius:3px;font-family:var(--f-b);
+  font-size:16px;background:#fff;color:var(--ink);margin-bottom:12px}
+label.fl{display:block;font-family:var(--f-m);font-size:11px;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--mid);margin-bottom:7px}
+
+/* deadline results */
+.dl{border-left:5px solid var(--line);padding:16px 0 16px 18px;margin-bottom:14px;background:transparent}
+.dl h4{font-family:var(--f-d);font-size:16.5px;margin:0 0 4px;font-weight:700}
+.dl .date{font-family:var(--f-m);font-size:21px;font-weight:600;letter-spacing:-.02em;margin:6px 0 4px}
+.dl p{font-size:14.5px;color:var(--mid);margin:0}
+.dl.ok{border-left-color:var(--ok)} .dl.ok .date{color:var(--ok)}
+.dl.warn{border-left-color:var(--warn)} .dl.warn .date{color:var(--warn)}
+.dl.late{border-left-color:var(--late)} .dl.late .date{color:var(--late)}
+.pill{display:inline-block;font-family:var(--f-m);font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;
+  padding:4px 9px;border-radius:2px;margin-left:8px;vertical-align:2px}
+.pill.ok{background:#E4F1EA;color:var(--ok)}
+.pill.warn{background:#FBEEDD;color:var(--warn)}
+.pill.late{background:#F8E4E4;color:var(--late)}
+
+.clock{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 4px}
+.clock div{border:1px solid var(--line-d);border-radius:3px;padding:10px 14px;min-width:70px;text-align:center}
+.clock b{display:block;font-family:var(--f-m);font-size:clamp(21px,4vw,30px);font-weight:600;letter-spacing:-.03em}
+.clock span{font-family:var(--f-m);font-size:9px;letter-spacing:.14em;text-transform:uppercase;opacity:.6;margin-top:5px;display:block}
+
+.acc{border-top:1px solid var(--line)}
+.acc button{width:100%;background:none;border:0;border-bottom:1px solid var(--line);padding:17px 32px 17px 0;
+  text-align:left;cursor:pointer;position:relative;font-family:var(--f-d);font-size:16.5px;font-weight:600;color:inherit}
+.acc button::after{content:"+";position:absolute;right:4px;top:50%;transform:translateY(-50%);font-family:var(--f-m);font-size:19px;color:var(--deep)}
+.acc button[aria-expanded="true"]::after{content:"–"}
+.acc .panel{display:none;padding:2px 0 20px;border-bottom:1px solid var(--line)}
+.acc .panel.open{display:block}
+.acc .panel p{font-size:15.5px}
+
+.letter{width:100%;min-height:340px;font-family:var(--f-m);font-size:13px;line-height:1.65;white-space:pre-wrap}
+.note{border:1px dashed var(--line);border-radius:3px;padding:14px 16px;font-family:var(--f-m);font-size:11.5px;
+  line-height:1.65;color:var(--mid);margin-top:22px}
+.band--deep .note,.band--ink .note{border-color:var(--line-d);color:rgba(234,242,240,.62)}
+
+.steps{counter-reset:s;list-style:none;padding:0;margin:22px 0 0}
+.steps li{counter-increment:s;position:relative;padding:0 0 22px 46px;border-left:2px solid var(--line);margin-left:14px}
+.steps li:last-child{border-left-color:transparent;padding-bottom:0}
+.steps li::before{content:counter(s);position:absolute;left:-15px;top:-2px;width:28px;height:28px;border-radius:50%;
+  background:var(--deep);color:#fff;font-family:var(--f-m);font-size:13px;display:grid;place-items:center;font-weight:600}
+.steps h3{margin-bottom:5px}
+.steps p{font-size:15.5px;margin-bottom:0}
+
+footer.site{background:var(--ink);color:rgba(230,237,236,.6);padding:44px 0 30px;font-size:14.5px}
+footer.site a{color:rgba(230,237,236,.85)}
+footer.site h4{color:#E6EDEC;font-family:var(--f-m);font-size:10px;letter-spacing:.15em;text-transform:uppercase;margin:0 0 12px}
+.fgrid{display:grid;gap:26px;grid-template-columns:repeat(3,1fr)}
+@media(max-width:680px){.fgrid{grid-template-columns:1fr}}
+.fbtm{border-top:1px solid var(--line-d);margin-top:32px;padding-top:20px;font-family:var(--f-m);font-size:11.5px;line-height:1.7}
+
+.view{display:none}.view.on{display:block}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:.001ms!important}html{scroll-behavior:auto}}
+@media print{header.site,footer.site,.btnrow,.noprint{display:none!important}body{background:#fff}}
+</style>
+</head>
+<body>
+<header class="site">
+  <div class="wrap hbar">
+    <a class="logo" href="#top">
+      <svg class="m" viewBox="0 0 767.5 1000.0" aria-hidden="true"><path d="M666.8,740.8 629.9,777.9 646.7,819.8 542.7,923.4 479.9,920.4 478.5,945.2 450.1,944.6 426.6,970.7 379.4,939.9 381.9,990.3 324.3,949.0 321.7,1000.0 285.8,921.4 307.8,937.0 306.3,888.0 353.4,809.5 316.9,762.3 321.0,715.5 369.9,713.5 326.7,679.8 325.2,700.3 336.8,651.9 325.2,672.7 316.9,660.4 311.0,724.3 292.4,695.4 296.8,719.5 285.5,704.5 283.0,735.0 270.2,728.6 266.4,698.4 316.9,636.1 253.6,691.5 268.9,745.7 248.1,776.4 243.9,839.8 214.0,852.6 225.1,769.8 252.3,731.8 227.5,742.6 238.3,689.3 221.9,710.4 243.1,678.5 238.1,624.9 299.5,572.4 283.0,595.2 252.3,593.5 278.1,572.4 257.3,576.9 268.9,551.0 307.8,538.9 278.5,538.8 292.8,516.2 225.9,587.5 185.5,555.3 241.6,543.5 158.2,536.1 215.9,523.6 204.5,513.9 227.5,504.1 196.1,499.4 206.9,476.6 244.1,475.1 213.6,459.1 258.9,452.4 225.1,440.9 237.5,416.8 258.1,425.0 254.1,405.2 219.2,409.8 253.2,382.5 209.7,397.3 206.0,347.5 245.4,355.9 210.0,333.5 225.9,318.6 209.3,291.2 222.9,283.3 234.1,305.1 233.3,270.0 280.5,288.2 263.1,266.9 298.7,291.2 253.3,235.5 278.1,221.5 259.9,196.3 315.3,204.8 286.4,175.8 305.3,168.2 294.5,142.2 308.7,114.9 329.2,137.9 334.3,119.6 348.3,131.0 336.1,154.9 370.6,128.8 368.2,154.6 424.5,122.3 546.5,112.3 533.1,172.4 417.8,262.2 426.9,283.5 380.6,274.6 423.2,294.5 454.7,286.2 429.4,321.6 378.3,342.3 426.9,323.3 398.0,365.7 499.4,315.6 669.8,320.1 690.1,339.9 698.6,370.9 607.4,566.5 581.7,593.5 509.7,616.5 562.7,596.1 599.9,636.1 507.4,691.6 447.7,672.7 468.1,694.8 539.3,709.4 592.8,684.8 666.8,740.8ZM71.2,311.0 50.7,290.4 85.2,268.5 52.2,256.4 73.7,242.6 58.8,245.7 52.2,213.9 77.0,206.2 82.7,230.5 81.5,212.2 100.9,212.2 87.7,191.0 157.2,141.0 166.3,177.4 142.3,201.6 167.2,206.2 138.2,207.7 141.5,223.0 111.7,235.1 137.4,230.5 144.0,245.7 120.7,250.4 121.6,271.7 103.4,241.3 106.7,280.8 91.5,276.7 96.9,291.6 71.2,311.0ZM118.4,399.1 91.9,374.7 100.1,361.9 113.3,377.5 109.2,341.3 149.0,373.4 136.3,332.8 149.0,320.1 168.0,345.2 168.0,408.2 227.2,428.8 185.7,469.6 205.2,434.2 148.1,440.2 128.3,406.8 147.4,406.9 122.5,383.8 118.4,399.1ZM754.3,70.7 732.8,195.4 720.6,183.3 733.7,108.7 716.3,105.6 711.0,128.4 682.7,99.8 734.6,84.3 712.1,53.9 692.4,55.9 702.4,39.6 719.6,49.5 708.0,43.4 729.6,20.5 721.3,73.9 739.7,52.6 739.3,72.3 754.3,70.7ZM224.2,601.2 209.6,626.9 143.0,630.3 184.0,612.9 162.0,613.3 184.5,586.0 145.7,575.3 163.5,554.7 224.2,601.2ZM182.9,757.7 151.8,791.1 156.3,747.1 125.7,768.3 132.8,731.2 146.5,722.0 149.0,737.9 169.6,710.6 182.9,757.7ZM581.7,39.0 570.0,58.8 551.0,41.4 524.3,51.2 506.5,10.8 538.6,4.2 549.4,19.3 534.7,32.9 581.7,39.0ZM298.7,806.4 287.5,822.9 265.5,812.3 271.4,759.1 298.7,806.4ZM50.2,331.2 50.6,349.3 28.1,353.5 46.8,362.6 0.0,344.5 28.1,323.3 50.2,331.2ZM211.0,672.7 223.4,665.0 183.3,742.9 177.5,716.3 211.0,672.7ZM36.4,403.8 24.0,443.1 39.7,450.7 23.2,453.9 14.1,390.0 36.4,403.8ZM767.5,8.3 750.2,53.1 745.3,19.8 754.9,0.0 767.5,8.3ZM518.8,78.6 532.9,75.4 512.6,81.5 501.3,50.2 525.5,65.0 518.8,78.6Z"/></svg>
+      <span><b>DampCheck Scotland</b><span>Free help for tenants</span></span>
+    </a>
+    <span class="free">No sign-up · No charge</span>
+  </div>
+</header>
+
+<main id="top">
+
+<div class="band band--ink">
+  <div class="wrap">
+    <p class="eyebrow">Damp or mould in a rented home in Scotland</p>
+    <h1>Your landlord now has<br>a deadline. Here it is.</h1>
+    <p class="lede" style="margin-top:18px">From <b>6 October 2026</b>, landlords in Scotland — private and social — must investigate reported damp and mould within fixed timescales. This free tool works out what you are looking at, calculates the exact dates your landlord has to meet, and writes the letter that starts the clock.</p>
+    <div class="btnrow">
+      <a class="btn btn--l" href="#checker">Start — what am I looking at?</a>
+      <a class="btn" style="background:transparent;border-color:var(--line-d);color:#E6EDEC" href="#deadlines">Skip to deadline calculator</a>
+    </div>
+    <div class="clock" id="clock">
+      <div><b id="c-d">—</b><span>Days</span></div>
+      <div><b id="c-h">—</b><span>Hours</span></div>
+      <div><b id="c-m">—</b><span>Mins</span></div>
+      <div><b id="c-s">—</b><span>Secs</span></div>
+    </div>
+    <p class="small" style="color:rgba(230,237,236,.5)" id="clocklabel">until the new duties come into force</p>
+  </div>
+</div>
+
+<!-- ============ SYMPTOM CHECKER ============ -->
+<div class="band" id="checker">
+  <div class="wrap">
+    <p class="eyebrow">Step one</p>
+    <h2>What are you actually looking at?</h2>
+    <p class="lede">Damp gets treated as one problem. It is at least four, and they have different causes, different fixes and different people responsible. Answer these and we will tell you which is most likely.</p>
+
+    <div class="card" style="margin-top:26px">
+      <label class="fl">Your home is</label>
+      <div class="opts" data-g="tenure" data-mode="one" style="margin-bottom:24px">
+        <button class="opt" data-v="private">Privately rented<small>From a landlord or letting agent</small></button>
+        <button class="opt" data-v="social">Social housing<small>Council or housing association</small></button>
+        <button class="opt" data-v="owner">I own it<small>Including a flat in a tenement</small></button>
+      </div>
+
+      <label class="fl">What can you see? Choose everything that applies</label>
+      <div class="opts" data-g="signs" data-mode="many">
+        <button class="opt" data-v="tide">A tide mark low down the wall<small>A fairly level line, usually below waist height</small></button>
+        <button class="opt" data-v="mould">Black spotted mould<small>In corners, on cold walls, behind furniture</small></button>
+        <button class="opt" data-v="plaster">Bubbling, blown or salty plaster<small>Paint lifting, white crystals, crumbling</small></button>
+        <button class="opt" data-v="patch">One patch in one place<small>Under a window, beside a chimney, on one spot</small></button>
+        <button class="opt" data-v="rain">It gets worse after heavy rain<small>Within a day or two of a downpour</small></button>
+        <button class="opt" data-v="winter">Worse in winter, windows stream<small>Better in summer, water on the glass</small></button>
+        <button class="opt" data-v="smell">A musty smell<small>Strongest in one room or near the floor</small></button>
+        <button class="opt" data-v="timber">Soft or crumbling wood<small>Skirtings, floorboards, window frames</small></button>
+        <button class="opt" data-v="fungus">Mushroom-like growth or rust-red dust<small>White strands, orange or red dust</small></button>
+        <button class="opt" data-v="above">Water coming from above<small>Ceiling stain, flat above, roof</small></button>
+      </div>
+      <div class="btnrow"><button class="btn" id="diagnose">Show me what this suggests</button></div>
+      <div id="result" style="margin-top:22px"></div>
+    </div>
+  </div>
+</div>
+<!-- ============ DEADLINE CALCULATOR ============ -->
+<div class="band band--deep" id="deadlines">
+  <div class="wrap">
+    <p class="eyebrow">Step two</p>
+    <h2 style="color:#EAF2F0">The 10 · 3 · 5 rule, counted for you.</h2>
+    <p class="lede">Once your landlord becomes aware the property may be affected by damp or mould, three clocks start. Working days, not calendar days — so weekends and Scottish bank holidays do not count. Put in the date you told them and we will work out the actual dates.</p>
+
+    <div class="card" style="margin-top:24px">
+      <label class="fl" for="reported">The date you reported it to your landlord</label>
+      <input type="date" id="reported">
+      <p class="small" style="margin:-2px 0 16px">If you reported it more than once, use the <b>first</b> date. If it was verbal, use the date you spoke to them — but see the letter below, because in writing is far easier to prove.</p>
+      <div class="btnrow" style="margin-top:0"><button class="btn" id="calc">Calculate the deadlines</button></div>
+      <div id="dlout" style="margin-top:24px"></div>
+    </div>
+
+    <div class="note">
+      A working day normally means a day that is not a Saturday, Sunday or bank holiday. This calculator excludes weekends and the Scottish bank holidays for 2026 and 2027. Local trades holidays vary by council area and are not counted here. Check the regulations for the definition that applies to your case.
+    </div>
+  </div>
+</div>
+
+<!-- ============ LETTER ============ -->
+<div class="band" id="letter">
+  <div class="wrap">
+    <p class="eyebrow">Step three</p>
+    <h2>Put it in writing, with a date on it.</h2>
+    <p class="lede">This is the single most useful thing you can do. A dated written report is what starts the clock, what proves when it started, and what the First-tier Tribunal will want to see if it goes that far. Fill this in and copy it into an email.</p>
+
+    <div class="card" style="margin-top:24px">
+      <div class="cols c2">
+        <div>
+          <label class="fl" for="lname">Your name</label>
+          <input type="text" id="lname" placeholder="Your full name">
+        </div>
+        <div>
+          <label class="fl" for="laddr">Property address</label>
+          <input type="text" id="laddr" placeholder="Flat 2/1, 14 Example Street, Glasgow">
+        </div>
+      </div>
+      <div class="cols c2">
+        <div>
+          <label class="fl" for="lland">Landlord or agent name</label>
+          <input type="text" id="lland" placeholder="Who you rent from">
+        </div>
+        <div>
+          <label class="fl" for="lfirst">Date you first noticed it</label>
+          <input type="date" id="lfirst">
+        </div>
+      </div>
+      <label class="fl" for="lrooms">Which rooms are affected</label>
+      <input type="text" id="lrooms" placeholder="Back bedroom and the hall cupboard">
+      <label class="fl" for="lextra">Anything else they should know</label>
+      <textarea id="lextra" rows="3" placeholder="Someone in the house has asthma. The window in that room has never opened properly. I reported it by phone in March."></textarea>
+      <div class="btnrow"><button class="btn" id="genletter">Write my letter</button></div>
+      <div id="letterout" style="margin-top:22px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ IF THEY DON'T ACT ============ -->
+<div class="band band--tight" style="border-top:1px solid var(--line)">
+  <div class="wrap">
+    <p class="eyebrow">If the deadlines pass</p>
+    <h2>What you can actually do about it.</h2>
+    <ol class="steps">
+      <li>
+        <h3>Chase in writing, once</h3>
+        <p>Reply to your own email so the thread has the original date in it. Say which deadline has passed and ask them to confirm when they will attend. Keep it short and unemotional — this becomes evidence.</p>
+      </li>
+      <li>
+        <h3>Get free advice</h3>
+        <p><b>Shelter Scotland</b> and <b>Citizens Advice Scotland</b> both give free, independent housing advice and can tell you how strong your position is before you spend anything. Neither charges, and neither is trying to sell you a survey.</p>
+      </li>
+      <li>
+        <h3>Tell your council's environmental health team</h3>
+        <p>Local authorities have powers over housing that falls below the Tolerable Standard, which includes being substantially free from rising and penetrating damp. This route costs you nothing.</p>
+      </li>
+      <li>
+        <h3>Apply to the First-tier Tribunal</h3>
+        <p>If you rent privately and your landlord has not met the Repairing Standard, you can apply to the <b>First-tier Tribunal for Scotland (Housing and Property Chamber)</b>. It can order the work done and can reduce the rent payable until it is. There is no fee to apply. If you are a social tenant, complain through your landlord's process first, then the <b>Scottish Public Services Ombudsman</b>.</p>
+      </li>
+    </ol>
+  </div>
+</div>
+
+<!-- ============ THE LAW ============ -->
+<div class="band band--ink">
+  <div class="wrap">
+    <p class="eyebrow">The rules, in plain English</p>
+    <h2 style="color:#E6EDEC">What the law actually says.</h2>
+    <div class="acc" id="law" style="margin-top:22px;border-color:var(--line-d)">
+      <button aria-expanded="false" style="border-color:var(--line-d);color:#E6EDEC">The new damp and mould timescales</button>
+      <div class="panel" style="border-color:var(--line-d)">
+        <p style="color:rgba(230,237,236,.8)">The Investigation and Commencement of Repair (Scotland) Regulations 2026 come into force on 6 October 2026 and apply to both social and private rented housing. Once a landlord becomes aware a property may be affected by damp or mould — from your report, their own inspection, or any other route — they must investigate within <b>10 working days</b>, give you a written summary of what they found within <b>3 working days</b> of finishing that investigation, and start any necessary work within <b>5 working days</b> of concluding it is needed.</p>
+        <p style="color:rgba(230,237,236,.8)">If they cannot meet a timescale for reasons outside their control, they must write to you explaining why and when they expect to comply. Note that in the private rented sector there is currently no statutory deadline for <i>finishing</i> the work and no automatic compensation scheme.</p>
+      </div>
+      <button aria-expanded="false" style="border-color:var(--line-d);color:#E6EDEC">The Repairing Standard</button>
+      <div class="panel" style="border-color:var(--line-d)">
+        <p style="color:rgba(230,237,236,.8)">Under the Housing (Scotland) Act 2006 a private rented home must be wind and watertight and in all other respects reasonably fit for people to live in — at the start of your tenancy and the whole way through it. The 2026 regulations amend the standard so the property must be substantially free from damp and mould. Enforcement is through the First-tier Tribunal, which can make a Repairing Standard Enforcement Order and a rent relief order.</p>
+      </div>
+      <button aria-expanded="false" style="border-color:var(--line-d);color:#E6EDEC">The Tolerable Standard</button>
+      <div class="panel" style="border-color:var(--line-d)">
+        <p style="color:rgba(230,237,236,.8)">A separate and older minimum, set by the Housing (Scotland) Act 1987. A house below it is not considered fit to live in. It includes being substantially free from rising damp and penetrating damp, and it applies across all tenures — so it matters whether you rent or own. Your council enforces it.</p>
+      </div>
+      <button aria-expanded="false" style="border-color:var(--line-d);color:#E6EDEC">Right to Repair — social tenants only</button>
+      <div class="panel" style="border-color:var(--line-d)">
+        <p style="color:rgba(230,237,236,.8)">Scottish secure tenants have a right to have certain small urgent repairs costing under £350 done within 1, 3 or 7 working days, with compensation if the landlord misses it. Most damp remediation is too expensive to qualify — but the things that cause it often do, such as a leaking pipe, a blocked drain or a broken extractor fan. Worth checking against your landlord's list.</p>
+      </div>
+      <button aria-expanded="false" style="border-color:var(--line-d);color:#E6EDEC">If you live in a tenement</button>
+      <div class="panel" style="border-color:var(--line-d)">
+        <p style="color:rgba(230,237,236,.8)">The defect causing your damp is often not in your flat. Roofs, gables, closes and common downpipes are shared, and who pays is decided first by the title deeds and then, where the deeds say nothing, by the Tenement Management Scheme in the Tenements (Scotland) Act 2004 — under which a majority of owners can agree necessary maintenance. If you rent, this does not remove your landlord's duty to you. It is their problem to sort out with the other owners, not yours.</p>
+      </div>
+      <button aria-expanded="false" style="border-color:var(--line-d);color:#E6EDEC">Will they blame me for the condensation?</button>
+      <div class="panel" style="border-color:var(--line-d)">
+        <p style="color:rgba(230,237,236,.8)">Often, yes — "you're drying washing indoors" is the standard reply. Sometimes lifestyle genuinely is a factor. But condensation and mould are also caused by cold bridging, missing or broken extract ventilation, windows that will not open, poor insulation and heating that costs too much to run. Where damp or mould is not the result of a building defect, landlords are still expected to work with you and point you to proper advice — not simply to close the case.</p>
+      </div>
+    </div>
+    <div class="note">
+      <b>This is general information, not legal advice.</b><br>
+      It is written to help you understand your position and is correct as far as we know at the date below. It is not a substitute for advice on your own circumstances. Check the current legislation at legislation.gov.uk, or speak to Shelter Scotland, Citizens Advice Scotland or a solicitor.<br><br>
+      LAST REVIEWED — 13 AUGUST 2026 · NEXT REVIEW — 6 OCTOBER 2026 · SCOTLAND ONLY — the rules in England, Wales and Northern Ireland are different
+    </div>
+  </div>
+</div>
+
+<div class="band band--tight" style="border-top:1px solid var(--line)">
+  <div class="wrap" style="text-align:center">
+    <h2 style="max-width:20ch;margin:0 auto .4em">Free, because it should be.</h2>
+    <p class="lede" style="margin:0 auto 4px">DampCheck Scotland takes no fee, shows no adverts and does not pass your details to anyone. Nothing you type here leaves your phone.</p>
+  </div>
+</div>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <div class="fgrid">
+      <div>
+        <h4>DampCheck Scotland</h4>
+        <p style="font-size:14.5px;max-width:32ch;margin:0">A free tool for tenants dealing with damp and mould in Scottish rented homes.</p>
+      </div>
+      <div>
+        <h4>Free advice</h4>
+        <ul style="list-style:none;padding:0;margin:0;font-size:14.5px;line-height:2">
+          <li>Shelter Scotland</li>
+          <li>Citizens Advice Scotland</li>
+          <li>First-tier Tribunal (Housing and Property Chamber)</li>
+          <li>Your council's environmental health team</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Elsewhere</h4>
+        <ul style="list-style:none;padding:0;margin:0;font-size:14.5px;line-height:2">
+          <li><a href="https://dampcheck.vercel.app" target="_blank" rel="noopener">DampCheck — England &#8599;</a></li>
+          <li><a href="https://www.scotlanddampproofing.co.uk" target="_blank" rel="noopener">Scotland Damp Proofing &#8599;</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="fbtm">
+      Built and maintained by Scotland Damp Proofing, who survey damp and timber professionally. This tool is free and carries no obligation — if it tells you the fault is your landlord's, take it to your landlord, not to us.<br>
+      © <span id="yr"></span> · General information only, not legal advice · Scotland only
+    </div>
+  </div>
+</footer>
+<script>
+const COMMENCE = new Date('2026-10-06T00:00:00+01:00');
+
+/* Scottish bank holidays 2026–2027 (weekends handled separately) */
+const BH = new Set([
+ '2026-01-01','2026-01-02','2026-04-03','2026-05-04','2026-05-25','2026-08-03','2026-11-30','2026-12-25','2026-12-28',
+ '2027-01-01','2027-01-04','2027-03-26','2027-05-03','2027-05-31','2027-08-02','2027-11-30','2027-12-27','2027-12-28'
+]);
+const iso = d => d.toISOString().slice(0,10);
+const isWorking = d => d.getDay()!==0 && d.getDay()!==6 && !BH.has(iso(d));
+function addWorkingDays(start, n){
+  const d = new Date(start.getTime()); let c = 0;
+  while(c < n){ d.setDate(d.getDate()+1); if(isWorking(d)) c++; }
+  return d;
+}
+const fmt = d => d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+const today = () => { const t=new Date(); t.setHours(0,0,0,0); return t; };
+
+/* ---------- countdown ---------- */
+(function(){
+  const pad = n => String(n).padStart(2,'0');
+  function tick(){
+    const ms = COMMENCE - new Date();
+    const set=(k,v)=>{const e=document.getElementById(k); if(e) e.textContent=v;};
+    if(ms > 0){
+      set('c-d', Math.floor(ms/864e5)); set('c-h', pad(Math.floor(ms/36e5)%24));
+      set('c-m', pad(Math.floor(ms/6e4)%60)); set('c-s', pad(Math.floor(ms/1e3)%60));
+    } else {
+      ['c-d','c-h','c-m','c-s'].forEach((k,i)=>set(k,['IN','FO','RC','E'][i]));
+      const l=document.getElementById('clocklabel'); if(l) l.textContent='These duties are now in force.';
+    }
+  }
+  tick(); setInterval(tick,1000);
+})();
+
+document.getElementById('yr').textContent = new Date().getFullYear();
+
+/* ---------- option groups ---------- */
+const state = { tenure:'', signs:[] };
+document.querySelectorAll('.opts').forEach(g=>{
+  g.querySelectorAll('.opt').forEach(b=>{
+    b.addEventListener('click',()=>{
+      const k=g.dataset.g;
+      if(g.dataset.mode==='one'){ g.querySelectorAll('.opt').forEach(o=>o.classList.remove('sel')); b.classList.add('sel'); state[k]=b.dataset.v; }
+      else { b.classList.toggle('sel'); state[k]=[...g.querySelectorAll('.opt.sel')].map(o=>o.dataset.v); }
+    });
+  });
+});
+
+/* ---------- diagnosis ---------- */
+document.getElementById('diagnose').addEventListener('click',()=>{
+  const s = state.signs, out = [];
+  const box = document.getElementById('result');
+  if(!s.length){ box.innerHTML = '<p class="small" style="color:var(--late)">Choose at least one thing you can see.</p>'; return; }
+
+  if(s.includes('fungus'))
+    out.push(['Possible dry rot — get this looked at quickly','Rust-red dust and white strands are the signs of a fungus that spreads through masonry and eats structural timber. It needs a water source, so something is leaking. This is the one form of damp that genuinely gets worse and more expensive the longer it is left. Report it today and use the word "fungus" in your letter.','late']);
+  if(s.includes('timber') && !s.includes('fungus'))
+    out.push(['Wet rot is likely','Soft, dark, crumbling wood in a wet area. Contained and fixable, but the water getting to it has not been stopped. Repairing the wood without finding the leak just buys a year.','warn']);
+  if(s.includes('above'))
+    out.push(['Water is coming from above','A ceiling stain, a flat above, or a roof. In a tenement this often means a shared roof or a common downpipe, which is your landlord\u2019s problem to resolve with the other owners — not yours.','warn']);
+  if(s.includes('patch') || s.includes('rain'))
+    out.push(['Points to penetrating damp','Water crossing the wall from outside through a specific fault — cracked harling, failed pointing, a split downpipe, a slipped slate, a chimney flashing. It is a building repair, and it is a landlord repair. Note in your letter that it worsens after rain; that detail matters.','warn']);
+  if(s.includes('mould') || s.includes('winter'))
+    out.push(['Consistent with condensation and mould','Black spotted mould in cold corners and on cold walls, worse in winter. Landlords often blame drying washing indoors. Sometimes that is a factor — but so are broken extractor fans, windows that will not open, cold bridging and heating too expensive to run, and those are the landlord\u2019s side of it. The 2026 timescales were written with exactly this situation in mind.','warn']);
+  if((s.includes('tide')||s.includes('plaster')||s.includes('smell')) && !s.includes('rain') && !s.includes('patch'))
+    out.push(['Worth ruling out rising damp','A level tide mark with salty, blown plaster fits rising damp — but it also fits a leak below floor level, ground piled up against an outside wall, or a blocked airbrick. It is diagnosed far more often than it occurs. Whatever the cause, a wall in that condition is your landlord\u2019s to investigate.','warn']);
+  if(!out.length)
+    out.push(['Not clear-cut — report it anyway','What you have described does not point in one direction. That is common, and it is not your job to diagnose it. Your landlord\u2019s duty to investigate is triggered by you telling them there may be damp or mould, not by you proving what it is.','warn']);
+
+  let who = '';
+  if(state.tenure==='private') who = '<p style="font-size:15.5px"><b>You rent privately.</b> Your landlord must meet the Repairing Standard, and from 6 October 2026 the 10\u00b73\u00b75 timescales apply to them. If they do not act, you can apply to the First-tier Tribunal for Scotland at no cost.</p>';
+  if(state.tenure==='social') who = '<p style="font-size:15.5px"><b>You are a social tenant.</b> The same timescales apply to your landlord from 6 October 2026, and they also answer to the Scottish Housing Regulator. Use their formal complaints process, then the Scottish Public Services Ombudsman.</p>';
+  if(state.tenure==='owner') who = '<p style="font-size:15.5px"><b>You own your home.</b> The timescales below apply to landlords, so they will not help you directly. But if you are in a tenement and the fault is in shared fabric — roof, gable, close, common downpipe — the Tenements (Scotland) Act 2004 governs how repairs get agreed and paid for. Read the tenement section below.</p>';
+
+  box.innerHTML = out.map(([h,p,cls])=>
+    `<div class="dl ${cls}"><h4>${h}</h4><p style="color:var(--ink);font-size:15.5px;margin-top:6px">${p}</p></div>`).join('')
+    + who + '<p class="small">This is an indication from what you have described, not a diagnosis. Only someone standing in the room can confirm the cause.</p>'
+    + '<div class="btnrow"><a class="btn" href="#deadlines">Next — work out the deadlines</a></div>';
+  box.scrollIntoView({behavior:'smooth',block:'nearest'});
+});
+
+/* ---------- deadlines ---------- */
+document.getElementById('calc').addEventListener('click',()=>{
+  const box = document.getElementById('dlout');
+  const v = document.getElementById('reported').value;
+  if(!v){ box.innerHTML='<p class="small" style="color:#FFD9D9">Put in the date you reported it.</p>'; return; }
+  const rep = new Date(v+'T00:00:00'); const now = today();
+  if(rep > now){ box.innerHTML='<p class="small" style="color:#FFD9D9">That date is in the future.</p>'; return; }
+
+  const pre = rep < new Date('2026-10-06T00:00:00');
+  const d10 = addWorkingDays(rep,10), d13 = addWorkingDays(d10,3), d18 = addWorkingDays(d10,5);
+  const st = d => now > d ? 'late' : (now.getTime() === d.getTime() ? 'warn' : 'ok');
+  const lab = d => now > d ? '<span class="pill late">Passed</span>' : (now.getTime()===d.getTime() ? '<span class="pill warn">Due today</span>' : '<span class="pill ok">Upcoming</span>');
+
+  let html = '';
+  if(pre) html += `<div class="dl warn" style="background:rgba(255,255,255,.06);padding:16px 18px;border-radius:0 3px 3px 0"><h4>You reported this before the new rules start</h4><p style="color:#EAF2F0;font-size:15px;margin-top:6px">The 10\u00b73\u00b75 timescales apply from <b>6 October 2026</b>, so they do not bite on a report made before then. Your landlord\u2019s duty under the Repairing Standard applies now regardless — a home must be wind and watertight and fit to live in throughout your tenancy. If it is still not fixed on 6 October, report it again in writing that day and the clock below will start properly.</p></div>`;
+
+  html += `
+  <div class="dl ${st(d10)}"><h4>Investigation complete ${lab(d10)}</h4>
+    <div class="date">${fmt(d10)}</div>
+    <p>10 working days from the day you reported it.</p></div>
+  <div class="dl ${st(d13)}"><h4>Written summary to you ${lab(d13)}</h4>
+    <div class="date">${fmt(d13)}</div>
+    <p>3 working days after the investigation is finished. Shown here assuming they use the full 10 days — if they investigate sooner, this date moves earlier.</p></div>
+  <div class="dl ${st(d18)}"><h4>Work must have started ${lab(d18)}</h4>
+    <div class="date">${fmt(d18)}</div>
+    <p>5 working days after they conclude work is needed. Started, not finished — there is no statutory completion deadline in the private rented sector.</p></div>
+  <p class="small" style="color:rgba(234,242,240,.75)">Weekends and Scottish bank holidays are excluded. Print or screenshot this — dates you can point at are worth more than dates you remember.</p>
+  <div class="btnrow"><a class="btn btn--l" href="#letter">Now write the letter</a></div>`;
+  box.innerHTML = html;
+});
+
+/* ---------- letter ---------- */
+document.getElementById('genletter').addEventListener('click',()=>{
+  const g = id => document.getElementById(id).value.trim();
+  const name=g('lname')||'[your name]', addr=g('laddr')||'[property address]',
+        land=g('lland')||'[landlord or agent]', rooms=g('lrooms')||'[rooms affected]',
+        extra=g('lextra'), first=g('lfirst');
+  const t = today();
+  const firstTxt = first ? new Date(first+'T00:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}) : '[date you first noticed it]';
+  const signs = state.signs.length ? state.signs.map(k=>({
+    tide:'a tide mark low down the wall', mould:'black spotted mould',
+    plaster:'bubbling, blown or salty plaster', patch:'a damp patch in one specific place',
+    rain:'the problem getting worse after heavy rain', winter:'the problem being worse in winter, with condensation on the windows',
+    smell:'a persistent musty smell', timber:'soft or crumbling woodwork',
+    fungus:'fungal growth, white strands or rust-red dust', above:'water coming in from above'
+  }[k])).join('; ') : '[describe what you can see]';
+
+  const d10 = addWorkingDays(t,10);
+  const post = t >= new Date('2026-10-06T00:00:00');
+
+  const legal = post
+    ? `Under the Investigation and Commencement of Repair (Scotland) Regulations 2026, now that you are aware the property may be affected by damp or mould, I understand you must complete an investigation within 10 working days, provide me with a written summary of the findings within 3 working days of completing it, and begin any necessary work within 5 working days of concluding that work is required.\n\nOn that basis I would expect the investigation to be completed by ${fmt(d10)}.`
+    : `Under section 13 of the Housing (Scotland) Act 2006 the property must be wind and watertight and in all other respects reasonably fit for human habitation, both at the start of the tenancy and throughout it. I would be grateful if you could arrange an inspection.\n\nI would also note that from 6 October 2026 the Investigation and Commencement of Repair (Scotland) Regulations 2026 require landlords to investigate reported damp or mould within 10 working days, to provide a written summary within 3 working days of completing that investigation, and to begin any necessary work within 5 working days of concluding it is needed.`;
+
+  const body =
+`Date: ${fmt(t)}
+
+To: ${land}
+Property: ${addr}
+
+Dear ${land},
+
+Report of damp and mould at ${addr}
+
+I am writing to report damp and mould at the above property, which I rent from you. I first noticed the problem on ${firstTxt}.
+
+The affected rooms are: ${rooms}.
+
+What I can see is: ${signs}.
+${extra ? '\n' + extra + '\n' : ''}
+${legal}
+
+Please confirm in writing when you or a contractor will attend. I am happy to make the property available and can be flexible on access.
+
+I am keeping a dated record of this report and of any response.
+
+Yours sincerely,
+
+${name}`;
+
+  document.getElementById('letterout').innerHTML =
+    `<label class="fl">Your letter — check it, edit anything, then copy</label>
+     <textarea class="letter" id="lbody">${body.replace(/</g,'&lt;')}</textarea>
+     <div class="btnrow" style="margin-top:6px">
+       <button class="btn" id="copyl">Copy letter</button>
+       <button class="btn btn--o" id="printl">Print or save as PDF</button>
+     </div>
+     <p class="small" style="margin-top:14px">Send it by email if you can — an email gives you a timestamp neither side can argue with. Keep a copy. If you hand it over on paper, take a photo of it first.</p>`;
+
+  document.getElementById('copyl').addEventListener('click', async function(){
+    const ta=document.getElementById('lbody');
+    try{ await navigator.clipboard.writeText(ta.value); this.textContent='Copied'; }
+    catch(e){ ta.select(); document.execCommand('copy'); this.textContent='Copied'; }
+    setTimeout(()=>{this.textContent='Copy letter';},2200);
+  });
+  document.getElementById('printl').addEventListener('click',()=>window.print());
+  document.getElementById('letterout').scrollIntoView({behavior:'smooth',block:'nearest'});
+});
+
+/* ---------- accordions ---------- */
+document.querySelectorAll('.acc button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    const open=b.getAttribute('aria-expanded')==='true';
+    b.setAttribute('aria-expanded',!open);
+    b.nextElementSibling.classList.toggle('open',!open);
+  });
+});
+</script>
+</body>
+</html>
