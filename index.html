@@ -15,6 +15,15 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="DampCheck Scotland | Free Damp &amp; Mould Help for Tenants">
 <meta name="twitter:description" content="Free tool for tenants in Scotland. Work out what your damp or mould is, calculate your landlord's 10-3-5 deadlines, and write a dated report.">
+<meta property="og:image" content="https://www.dampcheckscotland.co.uk/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Your landlord now has a deadline — the 10, 3 and 5 working-day duties.">
+<meta name="twitter:image" content="https://www.dampcheckscotland.co.uk/og-image.png">
+<meta name="theme-color" content="#0A1A2B">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -43,6 +52,9 @@ img,svg{max-width:100%;display:block}
 :focus-visible{outline:3px solid var(--ink);outline-offset:2px}
 .band--ink a:focus-visible,.band--ink button:focus-visible,
 .band--deep a:focus-visible,.band--deep button:focus-visible{outline-color:#fff}
+.skip{position:absolute;left:-9999px;top:0;z-index:100;background:var(--ink);color:var(--paper);
+  padding:12px 18px;font-family:var(--f-d);font-weight:600;text-decoration:none}
+.skip:focus{left:8px;top:8px}
 .wrap{max-width:840px;margin:0 auto;padding:0 var(--pad)}
 .band{padding:clamp(38px,7vw,68px) 0}
 .band--tight{padding:clamp(26px,4vw,40px) 0}
@@ -54,8 +66,7 @@ h1{font-size:clamp(32px,6.4vw,52px)}
 h2{font-size:clamp(24px,4vw,34px);font-weight:700}
 h3{font-size:clamp(18px,2.6vw,21px);font-weight:700;letter-spacing:-.015em}
 p{margin:0 0 1em;max-width:64ch}
-.lede{font-size:clamp(17px,2.2vw,20px);line-height:1.5;color:#33454300}
-.lede{color:#334543}
+.lede{font-size:clamp(17px,2.2vw,20px);line-height:1.5;color:#334543}
 .band--deep .lede,.band--ink .lede{color:rgba(234,242,240,.95)}
 .eyebrow{font-family:var(--f-m);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--mid);margin:0 0 14px;display:flex;align-items:center;gap:9px}
 .eyebrow::before{content:"";width:20px;height:2px;background:currentColor;opacity:.5}
@@ -67,7 +78,8 @@ header.site{background:var(--ink);color:#E6EDEC;position:sticky;top:0;z-index:50
 .hbar{display:flex;align-items:center;gap:14px;padding:12px 0}
 .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit}
 .logo b{font-family:var(--f-d);font-weight:800;font-size:16px;letter-spacing:-.02em;line-height:1}
-.logo span{font-family:var(--f-m);font-size:9px;letter-spacing:.15em;text-transform:uppercase;opacity:.6;display:block;margin-top:3px}
+.logo>span{display:block}
+.logo>span>span{font-family:var(--f-m);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:#96A8B8;display:block;margin-top:3px}
 .logo .m{width:22px;height:30px;flex:none}
 .logo .m path{fill:#E6EDEC}
 .hbar .free{margin-left:auto;font-family:var(--f-m);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;
@@ -133,6 +145,7 @@ label.fl{display:block;font-family:var(--f-m);font-size:11px;letter-spacing:.11e
 .acc button{width:100%;background:none;border:0;border-bottom:1px solid var(--line);padding:17px 32px 17px 0;
   text-align:left;cursor:pointer;position:relative;font-family:var(--f-d);font-size:16.5px;font-weight:600;color:inherit}
 .acc button::after{content:"+";position:absolute;right:4px;top:50%;transform:translateY(-50%);font-family:var(--f-m);font-size:19px;color:var(--deep)}
+.band--ink .acc button::after{color:#5EA9E8}
 .acc button[aria-expanded="true"]::after{content:"–"}
 .acc .panel{display:none;padding:2px 0 20px;border-bottom:1px solid var(--line)}
 .acc .panel.open{display:block}
@@ -164,10 +177,52 @@ footer.site h4{color:#E6EDEC;font-family:var(--f-m);font-size:10px;letter-spacin
 
 .view{display:none}.view.on{display:block}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:.001ms!important}html{scroll-behavior:auto}}
-@media print{header.site,footer.site,.btnrow,.noprint{display:none!important}body{background:#fff}}
+#letterprint{display:none}
+@media print{
+  header.site,footer.site,.btnrow,.noprint{display:none!important}
+  body{background:#fff}
+  /* a textarea prints only the visible box — print the mirrored text instead */
+  .letter{display:none!important}
+  #letterprint{display:block!important;white-space:pre-wrap;font-family:var(--f-m);font-size:12px;line-height:1.6}
+}
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://www.dampcheckscotland.co.uk/#website",
+      "url": "https://www.dampcheckscotland.co.uk/",
+      "name": "DampCheck Scotland",
+      "description": "Free tool for tenants in Scotland. Work out what your damp or mould is, calculate your landlord's 10-3-5 deadlines, and write a dated report.",
+      "inLanguage": "en-GB"
+    },
+    {
+      "@type": "WebApplication",
+      "@id": "https://www.dampcheckscotland.co.uk/#tool",
+      "name": "DampCheck Scotland",
+      "url": "https://www.dampcheckscotland.co.uk/",
+      "applicationCategory": "UtilitiesApplication",
+      "browserRequirements": "Requires JavaScript",
+      "operatingSystem": "Any",
+      "inLanguage": "en-GB",
+      "isAccessibleForFree": true,
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "GBP" },
+      "featureList": [
+        "Identify the likely type of damp from what you can see",
+        "Calculate a landlord's 10, 3 and 5 working-day deadlines",
+        "Generate a dated written report to send to a landlord"
+      ],
+      "areaServed": { "@type": "AdministrativeArea", "name": "Scotland" },
+      "isPartOf": { "@id": "https://www.dampcheckscotland.co.uk/#website" }
+    }
+  ]
+}
+</script>
 </head>
 <body>
+<a class="skip" href="#top">Skip to content</a>
 <header class="site">
   <div class="wrap hbar">
     <a class="logo" href="#top">
@@ -228,7 +283,7 @@ footer.site h4{color:#E6EDEC;font-family:var(--f-m);font-size:10px;letter-spacin
         <button class="opt" data-v="above">Water coming from above<small>Ceiling stain, flat above, roof</small></button>
       </div>
       <div class="btnrow"><button class="btn" id="diagnose">Show me what this suggests</button></div>
-      <div id="result" style="margin-top:22px"></div>
+      <div id="result" role="status" aria-live="polite" style="margin-top:22px"></div>
     </div>
   </div>
 </div>
@@ -244,7 +299,7 @@ footer.site h4{color:#E6EDEC;font-family:var(--f-m);font-size:10px;letter-spacin
       <input type="date" id="reported">
       <p class="small" style="margin:-2px 0 16px">If you reported it more than once, use the <b>first</b> date. If it was verbal, use the date you spoke to them — but see the letter below, because in writing is far easier to prove.</p>
       <div class="btnrow" style="margin-top:0"><button class="btn" id="calc">Calculate the deadlines</button></div>
-      <div id="dlout" style="margin-top:24px"></div>
+      <div id="dlout" role="status" aria-live="polite" style="margin-top:24px"></div>
     </div>
 
     <div class="note">
@@ -286,7 +341,7 @@ footer.site h4{color:#E6EDEC;font-family:var(--f-m);font-size:10px;letter-spacin
       <label class="fl" for="lextra">Anything else they should know</label>
       <textarea id="lextra" rows="3" placeholder="Someone in the house has asthma. The window in that room has never opened properly. I reported it by phone in March."></textarea>
       <div class="btnrow"><button class="btn" id="genletter">Write my letter</button></div>
-      <div id="letterout" style="margin-top:22px"></div>
+      <div id="letterout" role="status" aria-live="polite" style="margin-top:22px"></div>
     </div>
   </div>
 </div>
@@ -375,10 +430,10 @@ footer.site h4{color:#E6EDEC;font-family:var(--f-m);font-size:10px;letter-spacin
       <div>
         <h4>Free advice</h4>
         <ul style="list-style:none;padding:0;margin:0;font-size:14.5px;line-height:2">
-          <li>Shelter Scotland</li>
-          <li>Citizens Advice Scotland</li>
-          <li>First-tier Tribunal (Housing and Property Chamber)</li>
-          <li>Your council's environmental health team</li>
+          <li><a href="https://scotland.shelter.org.uk/" target="_blank" rel="noopener">Shelter Scotland &#8599;</a></li>
+          <li><a href="https://www.cas.org.uk/" target="_blank" rel="noopener">Citizens Advice Scotland &#8599;</a></li>
+          <li><a href="https://www.housingandpropertychamber.scot/" target="_blank" rel="noopener">First-tier Tribunal (Housing and Property Chamber) &#8599;</a></li>
+          <li><a href="https://www.mygov.scot/find-your-local-council" target="_blank" rel="noopener">Your council's environmental health team &#8599;</a></li>
         </ul>
       </div>
       <div>
@@ -438,11 +493,18 @@ document.getElementById('yr').textContent = new Date().getFullYear();
 /* ---------- option groups ---------- */
 const state = { tenure:'', signs:[] };
 document.querySelectorAll('.opts').forEach(g=>{
+  const single = g.dataset.mode==='one';
+  if(single) g.setAttribute('role','radiogroup');
   g.querySelectorAll('.opt').forEach(b=>{
+    if(single){ b.setAttribute('role','radio'); b.setAttribute('aria-checked','false'); }
+    else b.setAttribute('aria-pressed','false');
     b.addEventListener('click',()=>{
       const k=g.dataset.g;
-      if(g.dataset.mode==='one'){ g.querySelectorAll('.opt').forEach(o=>o.classList.remove('sel')); b.classList.add('sel'); state[k]=b.dataset.v; }
-      else { b.classList.toggle('sel'); state[k]=[...g.querySelectorAll('.opt.sel')].map(o=>o.dataset.v); }
+      if(g.dataset.mode==='one'){
+        g.querySelectorAll('.opt').forEach(o=>{ o.classList.remove('sel'); o.setAttribute('aria-checked','false'); });
+        b.classList.add('sel'); b.setAttribute('aria-checked','true'); state[k]=b.dataset.v;
+      }
+      else { b.classList.toggle('sel'); b.setAttribute('aria-pressed', b.classList.contains('sel')); state[k]=[...g.querySelectorAll('.opt.sel')].map(o=>o.dataset.v); }
     });
   });
 });
@@ -451,7 +513,7 @@ document.querySelectorAll('.opts').forEach(g=>{
 document.getElementById('diagnose').addEventListener('click',()=>{
   const s = state.signs, out = [];
   const box = document.getElementById('result');
-  if(!s.length){ box.innerHTML = '<p class="small" style="color:var(--late)">Choose at least one thing you can see.</p>'; return; }
+  if(!s.length){ box.innerHTML = '<p class="small" role="alert" style="color:var(--late)">Choose at least one thing you can see.</p>'; return; }
 
   if(s.includes('fungus'))
     out.push(['Possible dry rot — get this looked at quickly','Rust-red dust and white strands are the signs of a fungus that spreads through masonry and eats structural timber. It needs a water source, so something is leaking. This is the one form of damp that genuinely gets worse and more expensive the longer it is left. Report it today and use the word "fungus" in your letter.','late']);
@@ -484,9 +546,9 @@ document.getElementById('diagnose').addEventListener('click',()=>{
 document.getElementById('calc').addEventListener('click',()=>{
   const box = document.getElementById('dlout');
   const v = document.getElementById('reported').value;
-  if(!v){ box.innerHTML='<p class="small" style="color:#FFE4E4">Put in the date you reported it.</p>'; return; }
+  if(!v){ box.innerHTML='<p class="small" role="alert" style="color:#FFE4E4">Put in the date you reported it.</p>'; return; }
   const rep = new Date(v+'T00:00:00'); const now = today();
-  if(rep > now){ box.innerHTML='<p class="small" style="color:#FFE4E4">That date is in the future.</p>'; return; }
+  if(rep > now){ box.innerHTML='<p class="small" role="alert" style="color:#FFE4E4">That date is in the future.</p>'; return; }
 
   const pre = rep < new Date('2026-10-06T00:00:00');
   const d10 = addWorkingDays(rep,10), d13 = addWorkingDays(d10,3), d18 = addWorkingDays(d10,5);
@@ -561,13 +623,21 @@ Yours sincerely,
 ${name}`;
 
   document.getElementById('letterout').innerHTML =
-    `<label class="fl">Your letter — check it, edit anything, then copy</label>
-     <textarea class="letter" id="lbody">${body.replace(/</g,'&lt;')}</textarea>
+    `<label class="fl" for="lbody">Your letter — check it, edit anything, then copy</label>
+     <textarea class="letter" id="lbody"></textarea>
+     <pre id="letterprint" aria-hidden="true"></pre>
      <div class="btnrow" style="margin-top:6px">
        <button class="btn" id="copyl">Copy letter</button>
        <button class="btn btn--o" id="printl">Print or save as PDF</button>
      </div>
      <p class="small" style="margin-top:14px">Send it by email if you can — an email gives you a timestamp neither side can argue with. Keep a copy. If you hand it over on paper, take a photo of it first.</p>`;
+
+  const ta = document.getElementById('lbody');
+  const pre = document.getElementById('letterprint');
+  // .value takes the text verbatim — no HTML escaping to get wrong.
+  ta.value = body;
+  pre.textContent = body;
+  ta.addEventListener('input', () => { pre.textContent = ta.value; });
 
   document.getElementById('copyl').addEventListener('click', async function(){
     const ta=document.getElementById('lbody');
@@ -575,12 +645,18 @@ ${name}`;
     catch(e){ ta.select(); document.execCommand('copy'); this.textContent='Copied'; }
     setTimeout(()=>{this.textContent='Copy letter';},2200);
   });
-  document.getElementById('printl').addEventListener('click',()=>window.print());
+  document.getElementById('printl').addEventListener('click',()=>{
+    pre.textContent = ta.value;   // print exactly what is on screen now
+    window.print();
+  });
   document.getElementById('letterout').scrollIntoView({behavior:'smooth',block:'nearest'});
 });
 
 /* ---------- accordions ---------- */
-document.querySelectorAll('.acc button').forEach(b=>{
+document.querySelectorAll('.acc button').forEach((b,i)=>{
+  const panel = b.nextElementSibling;
+  panel.id = panel.id || `acc-panel-${i+1}`;
+  b.setAttribute('aria-controls', panel.id);
   b.addEventListener('click',()=>{
     const open=b.getAttribute('aria-expanded')==='true';
     b.setAttribute('aria-expanded',!open);
