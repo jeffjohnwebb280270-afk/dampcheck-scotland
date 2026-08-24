@@ -403,7 +403,10 @@ const BH = new Set([
  '2026-01-01','2026-01-02','2026-04-03','2026-05-04','2026-05-25','2026-08-03','2026-11-30','2026-12-25','2026-12-28',
  '2027-01-01','2027-01-04','2027-03-26','2027-05-03','2027-05-31','2027-08-02','2027-11-30','2027-12-27','2027-12-28'
 ]);
-const iso = d => d.toISOString().slice(0,10);
+/* Local date parts, not toISOString(). Dates here are built at local midnight,
+   and toISOString() converts to UTC — so through BST every lookup below landed
+   on the previous day, counting real bank holidays as working days. */
+const iso = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 const isWorking = d => d.getDay()!==0 && d.getDay()!==6 && !BH.has(iso(d));
 function addWorkingDays(start, n){
   const d = new Date(start.getTime()); let c = 0;
